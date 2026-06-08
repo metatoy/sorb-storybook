@@ -1,0 +1,57 @@
+{
+  "name": "@sorb/storybook",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sorb Storybook addon — per-story Bound Tokens panel + Token Explorer over the running build's resolved + bound token data (roadmap §8). Read-only; gated edit mode routes through the bridge /preview → Open-PR path.",
+  "license": "MIT",
+  "type": "module",
+  "keywords": [
+    "sorb",
+    "storybook",
+    "storybook-addons",
+    "design-tokens",
+    "figma"
+  ],
+  "homepage": "https://github.com/metatoy/sorb-storybook#readme",
+  "bugs": "https://github.com/metatoy/sorb-storybook/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/metatoy/sorb-storybook.git"
+  },
+  "exports": {
+    "./preset": "./dist/preset.js",
+    "./manager": "./dist/manager.js",
+    "./preview": "./dist/preview.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src",
+    "preset.js",
+    "manager.js",
+    "preview.js"
+  ],
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@sorb/core": "^0.1.1"
+  },
+  "peerDependencies": {
+    "@storybook/components": ">=7",
+    "@storybook/manager-api": ">=7",
+    "@storybook/preview-api": ">=7",
+    "@storybook/theming": ">=7",
+    "react": ">=17",
+    "react-dom": ">=17"
+  },
+  "peerDependenciesMeta": {
+    "react": { "optional": false },
+    "react-dom": { "optional": false }
+  },
+  "devDependencies": {
+    "esbuild": "^0.21.0"
+  },
+  "sideEffects": false
+}
