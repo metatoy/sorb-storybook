@@ -1,0 +1,23 @@
+name: Publish @sorb/storybook
+on:
+  workflow_dispatch: {}        # manual "Run workflow" button — use this for 0.1.0
+  push:
+    tags: ['v*']               # future releases: publish on a version tag
+
+permissions:
+  contents: read
+  id-token: write              # required: mints the short-lived OIDC credential npm trusts
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest     # GitHub-hosted runner (required for OIDC)
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+      - run: npm install -g npm@^11.5.1  # OIDC trusted publishing needs npm >=11.5.1; 11.x still supports Node 20 (npm 12 dropped it)
+      - run: npm install                 # storybook carries no per-package lockfile (workspace rule); pulls esbuild devDep + @sorb/core from npm
+      - run: npm publish --access public --provenance
+        # NO NODE_AUTH_TOKEN / NPM_TOKEN — OIDC handles auth entirely; prepublishOnly rebuilds dist
