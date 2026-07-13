@@ -9,7 +9,8 @@ story it lists the tokens its captured component actually binds
 (`role · id · cssVar · resolved value · tier`), plus a reverse "used by" link
 from each token to the stories that bind it — zero Figma round-trip.
 
-> Status: scaffolding (branch-local; **not published**).
+> Status: merged to `main` and wired into the `sorb-demo` reference consumer
+> (`addons: ['@sorb/storybook']`); **not yet published to npm**.
 
 ## What it adds
 
@@ -62,15 +63,18 @@ JavaScript only (JSDoc typedefs, **no TypeScript**); built with **esbuild**, not
 tsup. `react`, `react-dom`, and all `@storybook/*` are **peer deps** the
 consumer provides (kept external). `dist/` is gitignored — source only.
 
-### Viewing it live (manual follow-up)
+### Viewing it live
 
-`sorb-demo` has the addon registered in `.storybook/main.js` but **no full
-Storybook toolchain installed**. To see the panel + tab live:
+`sorb-demo` is the reference consumer: it has the addon wired in
+`.storybook/main.js` (`addons: ['@sorb/storybook']`) **and** the full Storybook 8
+toolchain installed. To see the panel + tab live:
 
-1. In `sorb-demo`, install Storybook: `npx storybook@latest init` (or add
-   `@storybook/react` + a builder).
-2. `corepack pnpm storybook` (or `npx storybook dev`) — the **Sorb** panel
-   appears next to Controls; **Token Explorer** appears as a top tab.
+1. In `sorb-demo`: `pnpm install --ignore-workspace`.
+2. Give it bound-token data to show: run `sorb-seed capture` (needs a chromium
+   browser — `npx playwright install chromium`, one-time) so the `.sorb/` map +
+   `*.sorb.json` artifacts exist.
+3. `pnpm storybook` (runs `storybook dev -p 6006`) — the **Sorb** panel appears
+   next to Controls; **Token Explorer** appears as a top tab.
 
 Targets Storybook **7 and 8** (the `addons.register` / `addons.add` manager-api
 is stable across both).

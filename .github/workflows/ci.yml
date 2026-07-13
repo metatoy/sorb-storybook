@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          # no `cache: npm` — polyrepo, no committed lockfile; cache errors without one.
+      # Resolves @sorb/core from npm (published) — proves the addon installs
+      # without the workspace. react/react-dom/@storybook/* are peer deps.
+      - run: npm install --no-audit --no-fund
+      # Build the addon (esbuild → dist/{preset,manager,preview}.js) — this is
+      # the artifact consumers load via `addons: ['@sorb/storybook']`, so a
+      # broken build must fail CI.
+      - run: node build.mjs
+      # Data-join + reverse-index + gated-edit-contract tests. `node --test`.
+      - run: npm test
