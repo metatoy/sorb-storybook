@@ -51,6 +51,30 @@ export function env(config = {}) {
 }
 
 /**
+ * Inject the precomputed `.sorb/` bundle into the preview iframe as a global the
+ * in-iframe preview entry (`preview.js`) reads on every `storyRendered` and
+ * re-broadcasts to the manager panel + explorer over the SB channel.
+ *
+ * This is the portable SB 7/8 way to hand node-read disk data to the browser
+ * side: stamp a `<script>` into the iframe <head>. Without it the panel has no
+ * data source and renders empty. Runs in the builder (node) process, so
+ * `computeSorbBundle` can read `.sorb/` off disk.
+ *
+ * @param {string} [head]
+ * @returns {string}
+ */
+export function previewHead(head = '') {
+  try {
+    const bundle = computeSorbBundle()
+    // Escape `<` so an embedded `</script>` (or `<!--`) can't break out of the tag.
+    const json = JSON.stringify(bundle).replace(/</g, '\\u003c')
+    return `${head}\n<script>window.__SORB_STORYBOOK__ = ${json};</script>`
+  } catch (e) {
+    return head
+  }
+}
+
+/**
  * Precompute everything the UI needs from `.sorb/`: the resolved map, a
  * `storyId → boundRows` map, and the reverse `tokenId → storyId[]` index.
  * Exposed (and unit-testable) independently of SB's hook plumbing.

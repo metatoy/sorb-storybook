@@ -3,7 +3,7 @@
 // tested). Targets Storybook 7 AND 8 (the `addons.register` + `addons.add`
 // manager-api is stable across both majors).
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { addons, types, useChannel, useStorybookState } from '@storybook/manager-api'
 import { AddonPanel } from '@storybook/components'
 import { ADDON_ID, PANEL_ID, TAB_ID, PARAM_KEY } from './constants.js'
@@ -180,17 +180,23 @@ function TokenExplorer({ active, resolved = [], reverseIndex = {} }) {
 function PanelContainer({ active }) {
   const [bundle, setBundle] = useState({ rows: [] })
   // Preview-side broadcasts the active story's joined data over the channel.
-  useChannel({
+  const emit = useChannel({
     [`${ADDON_ID}/data`]: (payload) => setBundle(payload || { rows: [] }),
   })
+  // Ask the preview for data on mount, so a panel opened after the story already
+  // rendered still fills (the render-time broadcast may have preceded us).
+  useEffect(() => { emit(`${ADDON_ID}/request`) }, [])
   return <BoundTokensPanel active={active} rows={bundle.rows || []} />
 }
 
 function ExplorerContainer({ active }) {
   const [bundle, setBundle] = useState({ resolved: [], reverseIndex: {} })
-  useChannel({
+  const emit = useChannel({
     [`${ADDON_ID}/explorer`]: (payload) => setBundle(payload || { resolved: [], reverseIndex: {} }),
   })
+  // The Explorer TAB only mounts when activated — after story render — so it
+  // misses the render-time broadcast. Request the bundle on mount.
+  useEffect(() => { emit(`${ADDON_ID}/request`) }, [])
   return (
     <TokenExplorer
       active={active}

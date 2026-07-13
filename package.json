@@ -22,6 +22,7 @@
     "./preset": "./dist/preset.js",
     "./manager": "./dist/manager.js",
     "./preview": "./dist/preview.js",
+    "./dist/*": "./dist/*",
     "./package.json": "./package.json"
   },
   "files": [

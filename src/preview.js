@@ -32,24 +32,39 @@ export function liveValue(cssVar) {
   }
 }
 
-// On every story render, forward the preset-stamped Sorb data to the manager.
+/**
+ * Emit the current story's bound rows + the (story-independent) explorer bundle
+ * to the manager over the channel. `__SORB_STORYBOOK__` is stamped into the
+ * iframe by the preset's `previewHead`.
+ * @param {string} [storyId]
+ */
+function emitSorbData(storyId) {
+  try {
+    const win = /** @type {any} */ (globalThis)
+    const store = win.__SORB_STORYBOOK__ || {}
+    const rows = (storyId && store.boundByStory && store.boundByStory[storyId]) || []
+    channel.emit(`${ADDON_ID}/data`, { rows })
+    channel.emit(`${ADDON_ID}/explorer`, {
+      resolved: store.resolved || [],
+      reverseIndex: store.reverseIndex || {},
+    })
+  } catch (e) {
+    // never break a story render over panel plumbing
+  }
+}
+
+// Forward the preset-stamped Sorb data to the manager. Two triggers:
+//   1. `storyRendered` — the panel follows the active story (per-story rows).
+//   2. `${ADDON_ID}/request` — a manager-side surface (esp. the Token Explorer
+//      TAB, which only mounts when activated and so misses the render-time
+//      broadcast) asks for the data on mount. We reply with the last story seen.
+let lastStoryId
 if (channel && typeof channel.on === 'function') {
-  // SB emits STORY_RENDERED with the storyId; we re-broadcast that story's
-  // precomputed bundle (stamped on parameters.sorb by the preset).
   channel.on('storyRendered', (storyId) => {
-    try {
-      const win = /** @type {any} */ (globalThis)
-      const store = win.__SORB_STORYBOOK__ || {}
-      const bundle = store.boundByStory && store.boundByStory[storyId]
-      channel.emit(`${ADDON_ID}/data`, { rows: bundle || [] })
-      channel.emit(`${ADDON_ID}/explorer`, {
-        resolved: store.resolved || [],
-        reverseIndex: store.reverseIndex || {},
-      })
-    } catch (e) {
-      // never break a story render over panel plumbing
-    }
+    lastStoryId = storyId
+    emitSorbData(storyId)
   })
+  channel.on(`${ADDON_ID}/request`, () => emitSorbData(lastStoryId))
 }
 
 /**
