@@ -1,7 +1,10 @@
 {
   "name": "@sorb/storybook",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Sorb Storybook addon — per-story Bound Tokens panel + Token Explorer over the running build's resolved + bound token data (roadmap §8). Read-only; gated edit mode routes through the bridge /preview → Open-PR path.",
   "license": "MIT",
   "type": "module",
@@ -34,6 +37,7 @@
   ],
   "scripts": {
     "build": "node build.mjs",
+    "prepublishOnly": "node build.mjs",
     "test": "node --test"
   },
   "dependencies": {
