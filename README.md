@@ -9,8 +9,8 @@ story it lists the tokens its captured component actually binds
 (`role · id · cssVar · resolved value · tier`), plus a reverse "used by" link
 from each token to the stories that bind it — zero Figma round-trip.
 
-> Status: merged to `main` and wired into the `sorb-demo` reference consumer
-> (`addons: ['@sorb/storybook']`); **not yet published to npm**.
+> Status: **published to npm as `@sorb/storybook@0.1.0`** and wired into the
+> `sorb-demo` reference consumer (`addons: ['@sorb/storybook']`).
 
 ## What it adds
 
