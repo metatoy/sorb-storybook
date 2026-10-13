@@ -1,0 +1,28 @@
+{
+  "name": "@sorb/storybook-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Derive component contracts from Storybook stories, validate them, and block breaking changes that skip a major version.",
+  "type": "module",
+  "bin": {
+    "sbc": "./bin/sbc.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "schema"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@babel/parser": "^8.0.7",
+    "ajv": "^8.20.0",
+    "fast-glob": "^3.3.3",
+    "semver": "^7.8.5"
+  }
+}

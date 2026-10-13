@@ -1,0 +1,12 @@
+{
+  "button": {
+    "background": {
+      "$type": "color",
+      "primary": {
+        "default": { "$value": "{color.action.primary}" },
+        "hover": { "$value": "{color.action.primary-hover}" }
+      }
+    },
+    "padding": { "$type": "dimension", "x": { "$value": "{space.md}" } }
+  }
+}

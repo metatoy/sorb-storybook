@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sorbcloud.com/schema/component-contract/0.1.json",
+  "title": "Component contract (derived from Storybook)",
+  "description": "One component's agreed shape: API surface, variants, states, accessibility, token bindings and version. Derived by `sbc derive`, reviewed by people, enforced by `sbc check`.",
+  "type": "object",
+  "required": ["$schema", "contractVersion", "id", "version", "status", "api", "variants", "states", "accessibility", "tokens", "source"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "contractVersion": { "const": "0.1" },
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$", "description": "Kebab-case component id, from the story title's last segment." },
+    "title": { "type": ["string", "null"], "description": "Storybook title, e.g. Components/Button." },
+    "version": { "type": "string", "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(-[0-9A-Za-z.-]+)?$", "description": "Semver of the component's public contract. A breaking change requires a major bump." },
+    "status": { "enum": ["draft", "stable", "deprecated", "unspecified"] },
+    "framework": { "enum": ["angular", "react", "unknown"] },
+    "selector": { "type": ["string", "null"], "description": "Angular selector, when known." },
+    "api": {
+      "type": "object",
+      "required": ["inputs", "outputs"],
+      "additionalProperties": false,
+      "properties": {
+        "inputs": { "type": "object", "additionalProperties": { "$ref": "#/$defs/input" } },
+        "outputs": { "type": "object", "additionalProperties": { "$ref": "#/$defs/output" } }
+      }
+    },
+    "variants": {
+      "type": "object",
+      "description": "For each enum input, which stories show each value. An empty list is a coverage gap.",
+      "additionalProperties": { "type": "object", "additionalProperties": { "type": "array", "items": { "type": "string" } } }
+    },
+    "states": {
+      "type": "object",
+      "description": "Interaction and boolean states and the stories that show them (hover, focusVisible, active, disabled, loading, …).",
+      "additionalProperties": { "type": "array", "items": { "type": "string" } }
+    },
+    "stories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "args"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string" },
+          "args": { "type": "object" },
+          "pseudo": { "type": "array", "items": { "type": "string" } },
+          "behaviorTest": { "type": "boolean" }
+        }
+      }
+    },
+    "accessibility": {
+      "type": "object",
+      "required": ["interactive"],
+      "additionalProperties": false,
+      "properties": {
+        "interactive": { "type": "boolean", "description": "True when the component emits events or declares an ARIA pattern." },
+        "pattern": { "type": ["string", "null"], "description": "WAI-ARIA APG pattern URL or name the component follows." },
+        "a11yTest": { "enum": ["error", "todo", "off", "unspecified"], "description": "Storybook a11y addon level (parameters.a11y.test)." },
+        "behaviorTests": { "type": "array", "items": { "type": "string" }, "description": "Stories with a play() function." },
+        "requirements": { "type": "array", "items": { "type": "string" }, "description": "Human-declared requirements, e.g. aria-expanded on trigger." }
+      }
+    },
+    "tokens": {
+      "type": "object",
+      "required": ["namespace", "bindings"],
+      "additionalProperties": false,
+      "properties": {
+        "namespace": { "type": ["string", "null"], "description": "Component-token namespace in the DTCG files, e.g. button." },
+        "bindings": {
+          "type": "object",
+          "description": "Component token path -> resolved alias chain and final value.",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["chain"],
+            "additionalProperties": false,
+            "properties": {
+              "chain": { "type": "array", "items": { "type": "string" } },
+              "value": {},
+              "type": { "type": ["string", "null"] }
+            }
+          }
+        }
+      }
+    },
+    "design": { "type": ["string", "null"], "description": "Figma (or other) design link from parameters.design." },
+    "source": {
+      "type": "object",
+      "required": ["stories"],
+      "additionalProperties": false,
+      "properties": {
+        "stories": { "type": "string" },
+        "component": { "type": ["string", "null"] }
+      }
+    }
+  },
+  "$defs": {
+    "input": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "enum": ["string", "number", "boolean", "enum", "function", "array", "object", "union", "unknown"] },
+        "values": { "type": "array", "items": { "type": ["string", "number"] } },
+        "default": {},
+        "required": { "type": "boolean" },
+        "model": { "type": "boolean" },
+        "text": { "type": "string" },
+        "from": { "enum": ["component", "argTypes", "both"], "description": "Where the input was found. argTypes-only inputs are documented but not proven in code." }
+      }
+    },
+    "output": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "event" },
+        "from": { "enum": ["component", "argTypes", "both"] }
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "color": {
+    "$type": "color",
+    "brand": { "500": { "$value": "#0057b8" }, "600": { "$value": "#00489a" } },
+    "action": {
+      "primary": { "$value": "{color.brand.500}" },
+      "primary-hover": { "$value": "{color.brand.600}" }
+    }
+  },
+  "space": { "$type": "dimension", "md": { "$value": "16px" } }
+}
